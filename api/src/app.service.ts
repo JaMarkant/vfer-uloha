@@ -12,7 +12,7 @@ export class AppService {
   ) {}
 
   public async getCount(): Promise<number | null> {
-    const count = await this.redisClient.get('key');
+    const count = await this.redisClient.get('count');
     if (count === null) {
       return null;
     }
@@ -20,9 +20,9 @@ export class AppService {
     return Number(count);
   }
 
-  public async addCount(count: number): Promise<string> {
+  public async addCount(count: number): Promise<void> {
     const currentCount = (await this.getCount()) || 0;
-    return await this.redisClient.set('key', currentCount + count);
+    await this.redisClient.set('count', currentCount + count);
   }
 
   public async processTrack(track: object): Promise<void> {
