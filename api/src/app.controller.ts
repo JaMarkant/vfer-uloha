@@ -5,8 +5,16 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('count')
+  async getCount(): Promise<string> {
+    await this.appService.setCount(1);
+
+    const count = await this.appService.getCount();
+
+    if (count === null) {
+      return 'Count not found';
+    }
+
+    return count;
   }
 }
