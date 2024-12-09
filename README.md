@@ -1,6 +1,6 @@
 # STROER Labs
 
-**Nejedná se o hotovou práci! Dávám pouze k náhledu v jakém jsem stavu :)**
+**Dávám zatím k náhledu úlohu č.1 :)**
 
 ## Instalace
 
@@ -10,7 +10,6 @@
 
 ## Unit test
 
-**Zatím nejsou všechny, ale jako proof of concept pár napsaných je.**
 ```shell
 docker compose exec api npm run test
 ```

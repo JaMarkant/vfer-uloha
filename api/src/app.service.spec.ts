@@ -3,6 +3,7 @@ import { RedisClientType } from 'redis';
 import { FilesystemService } from './filesystem/filesystem.service';
 import { createMock } from '@golevelup/ts-jest';
 import { DeepMocked } from '@golevelup/ts-jest/lib/mocks';
+import * as os from 'node:os';
 
 describe('AppService', () => {
   let redisClient: DeepMocked<RedisClientType>;
@@ -53,6 +54,73 @@ describe('AppService', () => {
 
       expect(redisClient.get).toHaveBeenCalledWith('count');
       expect(redisClient.set).toHaveBeenCalledWith('count', 3);
+    });
+  });
+
+  describe('processTrack', () => {
+    it('correctly processes track with count', async (): Promise<void> => {
+      jest
+        .spyOn(filesystemService, 'getTempFilePath')
+        .mockReturnValueOnce('/some/path');
+      jest.spyOn(filesystemService, 'appendFile');
+
+      jest.spyOn(appService, 'addCount').mockReturnValueOnce(Promise.resolve());
+
+      const track = { test: 1, count: 1 };
+      await appService.processTrack(track);
+
+      expect(filesystemService.getTempFilePath).toHaveBeenCalledWith(
+        'bodies.txt',
+      );
+      expect(filesystemService.appendFile).toHaveBeenCalledWith(
+        '/some/path',
+        `{"test":1,"count":1}${os.EOL}`,
+      );
+      expect(appService.addCount).toHaveBeenCalledWith(track.count);
+    });
+
+    it('correctly processes track without count', async (): Promise<void> => {
+      jest
+        .spyOn(filesystemService, 'getTempFilePath')
+        .mockReturnValueOnce('/some/path');
+      jest.spyOn(filesystemService, 'appendFile');
+      jest.spyOn(appService, 'addCount');
+
+      const track = { test: 1 };
+      await appService.processTrack(track);
+
+      expect(filesystemService.getTempFilePath).toHaveBeenCalledWith(
+        'bodies.txt',
+      );
+      expect(filesystemService.appendFile).toHaveBeenCalledWith(
+        '/some/path',
+        `{"test":1}${os.EOL}`,
+      );
+      expect(appService.addCount).not.toHaveBeenCalled();
+    });
+
+    it('throws on incorrect appendFile', async (): Promise<void> => {
+      jest
+        .spyOn(filesystemService, 'getTempFilePath')
+        .mockReturnValueOnce('/some/path');
+      jest.spyOn(filesystemService, 'appendFile').mockImplementation(() => {
+        throw new Error('File append error!');
+      });
+      jest.spyOn(appService, 'addCount');
+      const track = { test: 1 };
+
+      await expect(
+        async () => await appService.processTrack(track),
+      ).rejects.toThrow('File append error!');
+
+      expect(filesystemService.getTempFilePath).toHaveBeenCalledWith(
+        'bodies.txt',
+      );
+      expect(filesystemService.appendFile).toHaveBeenCalledWith(
+        '/some/path',
+        `{"test":1}${os.EOL}`,
+      );
+      expect(appService.addCount).not.toHaveBeenCalled();
     });
   });
 });
