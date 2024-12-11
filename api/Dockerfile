@@ -12,4 +12,7 @@ RUN npm install
 
 EXPOSE 3000
 
+# REVIEW: Proč se tady nastavuje uživatel?
+# USER node
+
 CMD npm run start:dev

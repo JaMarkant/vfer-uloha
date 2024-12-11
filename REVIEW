@@ -1,0 +1,15 @@
+Pros:
+- Napsané unit testy.
+- Temp složka v git ignoru.
+- Linter, formatter.
+- Použitů typování.
+- Hezká struktura.
+- Použití frameworku.
+- Použití dockeru.
+- Wrapper na filesystem i Redis servisu.
+
+Cons:
+- Neatomická inkrementace countu v Redisu.
+- Chybí error handling.
+    - Hodil by se retry při failnutí připojení k Redisu.
+    - Aplikace běží bez funkčního připojení k Redisu.
