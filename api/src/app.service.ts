@@ -22,7 +22,7 @@ export class AppService {
 
   public async addCount(count: number): Promise<void> {
     const currentCount = (await this.getCount()) || 0;
-    await this.redisClient.set('count', currentCount + count);
+    await this.redisClient.set('count', currentCount + count); // REVIEW: Mozno pouzit incrBy
   }
 
   public async processTrack(track: object): Promise<void> {
